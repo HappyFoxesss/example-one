@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爱心与烟花</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 20;
+            position: relative;
+        }
+        
+        .heart {
+            position: relative;
+            width: 200px;
+            height: 180px;
+            margin: 0 auto 30px;
+            animation: heartbeat 1.2s infinite;
+        }
+        
+        .heart:before,
+        .heart:after {
+            position: absolute;
+            content: "";
+            left: 100px;
+            top: 0;
+            width: 100px;
+            height: 160px;
+            background: #ff4757;
+            border-radius: 100px 100px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.7);
+        }
+        
+        .heart:after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+        
+        h1 {
+            color: #fff;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            color: #fff;
+            font-size: 18px;
+            max-width: 300px;
+            margin: 0 auto;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            5% { transform: scale(1.1); }
+            10% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 爱情文案弹窗样式 */
+        .love-message {
+            position: absolute;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 16px;
+            white-space: nowrap;
+            opacity: 0;
+            z-index: 5;
+            animation: floatMessage 8s linear forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes floatMessage {
+            0% {
+                opacity: 0;
+                transform: translateY(100px) scale(0.8);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(-100px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-150px) scale(0.8);
+            }
+        }
+        
+        /* 烟花样式 */
+        .firework {
+            position: absolute;
+            bottom: 0;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .firework-heart {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        /* 星星背景 */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        /* 流星样式 */
+        .shooting-star {
+            position: absolute;
+            z-index: 2;
+            opacity: 0;
+        }
+        
+        .shooting-star-core {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+        
+        .shooting-star-tail {
+            position: absolute;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
+        }
+        
+        /* 背景小爱心 */
+        .bg-heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .bg-heart:before,
+        .bg-heart:after {
+            position: absolute;
+            content: "";
+            left: 10px;
+            top: 0;
+            width: 10px;
+            height: 16px;
+            background: rgba(255, 71, 87, 0.5);
+            border-radius: 10px 10px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+        
+        .bg-heart:after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 星星背景 -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- 背景小爱心 -->
+    <div id="bgHearts"></div>
+    
+    <!-- 爱情文案容器 -->
+    <div id="loveMessages"></div>
+    
+    <!-- 烟花容器 -->
+    <div id="fireworks"></div>
+    
+    <!-- 流星容器 -->
+    <div id="shootingStars"></div>
+    
+    <!-- 主要内容 -->
+    <div class="container">
+        <div class="heart"></div>
+        <h1>爱在心中</h1>
+        <p class="message">点击屏幕，绽放爱的烟花</p>
+    </div>
+
+    <script>
+        // 爱情文案库
+        const loveMessages = [
+            "爱你一生一世",
+            "你是我的一切",
+            "心心相印",
+            "执子之手",
+            "与子偕老",
+            "情深似海",
+            "永结同心",
+            "白首不相离",
+            "一生只爱你",
+            "你是我唯一",
+            "爱意永存",
+            "情比金坚",
+            "爱你到永远",
+            "心心相印",
+            "你是我的梦",
+            "爱你不分离",
+            "永恒的爱",
+            "心中只有你",
+            "爱如潮水",
+            "情意绵绵"
+        ];
+        
+        // 创建星星背景
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 200;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // 随机位置和大小
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                
+                // 随机闪烁延迟
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // 创建流星效果
+        function createShootingStars() {
+            const shootingStarsContainer = document.getElementById('shootingStars');
+            
+            setInterval(() => {
+                if (Math.random() > 0.7) { // 30%的概率生成流星
+                    const star = document.createElement('div');
+                    star.classList.add('shooting-star');
+                    
+                    // 创建流星核心
+                    const core = document.createElement('div');
+                    core.classList.add('shooting-star-core');
+                    star.appendChild(core);
+                    
+                    // 创建流星拖尾
+                    const tail = document.createElement('div');
+                    tail.classList.add('shooting-star-tail');
+                    star.appendChild(tail);
+                    
+                    // 随机选择流星类型：上方或右方
+                    const type = Math.random() > 0.5 ? 'top' : 'right';
+                    
+                    if (type === 'top') {
+                        // 上方流星：从上方出现，向下运动
+                        const startX = Math.random() * 100;
+                        const startY = -10;
+                        star.style.left = `${startX}vw`;
+                        star.style.top = `${startY}vh`;
+                        
+                        // 设置拖尾方向（向下）
+                        tail.style.transform = 'rotate(0deg)';
+                        tail.style.left = '4px';
+                        tail.style.top = '1px';
+                        
+                        // 流星动画
+                        const animation = star.animate([
+                            { 
+                                transform: 'translateX(0) translateY(0)',
+                                opacity: 0
+                            },
+                            { 
+                                transform: `translateX(${Math.random() * 50 - 25}px) translateY(${window.innerHeight + 50}px)`,
+                                opacity: 1
+                            }
+                        ], {
+                            duration: 2000 + Math.random() * 1000,
+                            easing: 'ease-out'
+                        });
+                        
+                        // 动画结束后移除流星
+                        animation.onfinish = () => {
+                            star.remove();
+                        };
+                    } else {
+                        // 右方流星：从右方出现，向左运动
+                        const startX = window.innerWidth + 10;
+                        const startY = Math.random() * 100;
+                        star.style.left = `${startX}px`;
+                        star.style.top = `${startY}vh`;
+                        
+                        // 设置拖尾方向（向左）
+                        tail.style.transform = 'rotate(180deg)';
+                        tail.style.left = '-84px'; // 调整位置使拖尾在核心左侧
+                        tail.style.top = '1px';
+                        
+                        // 流星动画
+                        const animation = star.animate([
+                            { 
+                                transform: 'translateX(0) translateY(0)',
+                                opacity: 0
+                            },
+                            { 
+                                transform: `translateX(-${window.innerWidth + 100}px) translateY(${Math.random() * 100 - 50}px)`,
+                                opacity: 1
+                            }
+                        ], {
+                            duration: 2000 + Math.random() * 1000,
+                            easing: 'ease-out'
+                        });
+                        
+                        // 动画结束后移除流星
+                        animation.onfinish = () => {
+                            star.remove();
+                        };
+                    }
+                    
+                    // 添加到容器
+                    shootingStarsContainer.appendChild(star);
+                }
+            }, 3000);
+        }
+        
+        // 创建背景小爱心
+        function createBackgroundHearts() {
+            const bgHeartsContainer = document.getElementById('bgHearts');
+            const heartCount = 25;
+            
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('bg-heart');
+                
+                // 随机位置
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.top = `${Math.random() * 100}vh`;
+                
+                // 随机颜色
+                const colors = [
+                    'rgba(255, 105, 180, 0.5)', // 热粉红
+                    'rgba(255, 20, 147, 0.5)',  // 深粉红
+                    'rgba(255, 182, 193, 0.5)', // 浅粉红
+                    'rgba(219, 112, 147, 0.5)', // 淡紫红
+                    'rgba(199, 21, 133, 0.5)'   // 中紫红
+                ];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 设置爱心颜色
+                heart.style.setProperty('--heart-color', color);
+                
+                // 随机动画 - 去除倾斜，只保留浮动
+                const duration = 15 + Math.random() * 15;
+                heart.style.animation = `floatHeart ${duration}s linear infinite`;
+                
+                bgHeartsContainer.appendChild(heart);
+            }
+            
+            // 添加背景爱心动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes floatHeart {
+                    0% {
+                        transform: translate(0, 0) scale(1);
+                        opacity: 0.7;
+                    }
+                    25% {
+                        transform: translate(${Math.random() * 40 - 20}px, -20px) scale(1.1);
+                        opacity: 0.5;
+                    }
+                    50% {
+                        transform: translate(${Math.random() * 40 - 20}px, -40px) scale(1);
+                        opacity: 0.7;
+                    }
+                    75% {
+                        transform: translate(${Math.random() * 40 - 20}px, -20px) scale(0.9);
+                        opacity: 0.5;
+                    }
+                    100% {
+                        transform: translate(0, 0) scale(1);
+                        opacity: 0.7;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // 生成爱情文案弹窗
+        function createLoveMessage() {
+            const messagesContainer = document.getElementById('loveMessages');
+            const message = document.createElement('div');
+            message.classList.add('love-message');
+            
+            // 随机选择一条爱情文案
+            const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+            message.textContent = randomMessage;
+            
+            // 随机位置（避免遮挡中心爱心）
+            const left = 10 + Math.random() * 80; // 10% 到 90% 之间
+            const top = 10 + Math.random() * 80;  // 10% 到 90% 之间
+            
+            message.style.left = `${left}%`;
+            message.style.top = `${top}%`;
+            
+            // 随机颜色
+            const colors = [
+                'rgba(255, 105, 180, 0.8)', // 热粉红
+                'rgba(255, 20, 147, 0.8)',  // 深粉红
+                'rgba(255, 182, 193, 0.8)', // 浅粉红
+                'rgba(219, 112, 147, 0.8)', // 淡紫红
+                'rgba(199, 21, 133, 0.8)'   // 中紫红
+            ];
+            message.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            // 随机动画延迟
+            message.style.animationDelay = `${Math.random() * 2}s`;
+            
+            messagesContainer.appendChild(message);
+            
+            // 8秒后移除消息
+            setTimeout(() => {
+                message.remove();
+            }, 8000);
+        }
+        
+        // 创建烟花效果
+        function createFirework(x) {
+            const fireworksContainer = document.getElementById('fireworks');
+            
+            // 创建烟花主体
+            const firework = document.createElement('div');
+            firework.classList.add('firework');
+            firework.style.left = `${x}px`;
+            firework.style.bottom = `0px`;
+            
+            // 随机烟花颜色
+            const colors = [
+                '#ff4757', '#ffa502', '#2ed573', '#1e90ff', '#5352ed', 
+                '#ff6b81', '#ff9ff3', '#f368e0', '#00d2d3', '#54a0ff'
+            ];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            firework.style.backgroundColor = color;
+            firework.style.boxShadow = `0 0 10px 2px ${color}`;
+            
+            fireworksContainer.appendChild(firework);
+            
+            // 烟花上升动画
+            const targetY = 100 + Math.random() * (window.innerHeight - 200);
+            const riseDuration = 800 + Math.random() * 700;
+            
+            firework.animate([
+                { bottom: '0px', opacity: 1, transform: 'scale(1)' },
+                { bottom: `${targetY}px`, opacity: 1, transform: 'scale(1)' }
+            ], {
+                duration: riseDuration,
+                easing: 'cubic-bezier(0.2, 0.8, 0.4, 1)'
+            });
+            
+            // 上升结束后爆炸
+            setTimeout(() => {
+                firework.remove();
+                createExplosion(x, window.innerHeight - targetY, color);
+            }, riseDuration);
+        }
+        
+        // 创建爆炸效果 - 使用爱心粒子
+        function createExplosion(x, y, color) {
+            const fireworksContainer = document.getElementById('fireworks');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                // 创建爱心粒子
+                const heart = document.createElement('div');
+                heart.classList.add('firework-heart');
+                heart.style.left = `${x}px`;
+                heart.style.top = `${y}px`;
+                
+                // 使用伪元素创建爱心形状
+                heart.style.width = '20px';
+                heart.style.height = '20px';
+                
+                // 随机角度和距离
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 150;
+                
+                // 计算最终位置
+                const targetX = Math.cos(angle) * distance;
+                const targetY = Math.sin(angle) * distance;
+                
+                // 设置爱心颜色
+                heart.style.setProperty('--heart-color', color);
+                
+                // 使用CSS创建爱心
+                heart.innerHTML = `
+                    <style>
+                        .firework-heart:before, .firework-heart:after {
+                            content: "";
+                            position: absolute;
+                            left: 10px;
+                            top: 0;
+                            width: 10px;
+                            height: 16px;
+                            background: ${color};
+                            border-radius: 10px 10px 0 0;
+                            transform: rotate(-45deg);
+                            transform-origin: 0 100%;
+                        }
+                        .firework-heart:after {
+                            left: 0;
+                            transform: rotate(45deg);
+                            transform-origin: 100% 100%;
+                        }
+                    </style>
+                `;
+                
+                fireworksContainer.appendChild(heart);
+                
+                // 设置粒子动画 - 爱心粒子放大并淡出
+                heart.animate([
+                    { 
+                        transform: 'translate(0, 0) scale(0.5)', 
+                        opacity: 1 
+                    },
+                    { 
+                        transform: `translate(${targetX}px, ${targetY}px) scale(2)`, 
+                        opacity: 0 
+                    }
+                ], {
+                    duration: 1000 + Math.random() * 500,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                });
+                
+                // 1.5秒后移除粒子
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, 1500);
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            createBackgroundHearts();
+            createShootingStars();
+            
+            // 每0.5秒生成一个爱情文案
+            setInterval(createLoveMessage, 500);
+            
+            // 初始生成几个爱情文案
+            for (let i = 0; i < 5; i++) {
+                setTimeout(createLoveMessage, i * 200);
+            }
+        });
+        
+        // 点击页面创建烟花
+        document.addEventListener('click', function(e) {
+            createFirework(e.clientX);
+        });
+    </script>
+</body>
+</html>
